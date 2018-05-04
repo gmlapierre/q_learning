@@ -75,3 +75,6 @@ def use_q_matrix(q_matrix, initial_state, goal):
 Q = q_learning_algorithm(R, 0.8, range(10), 5)
 
 use_q_matrix(Q, 0, 5)
+
+
+print(np.__version__)
