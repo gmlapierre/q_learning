@@ -43,19 +43,61 @@ def get_max_q_value(q_matrix, row):
     return tmp[max_q_value]
 
 
-def q_learning_algorithm(reward_matrix, gamma, episodes, goal_state):
-    Q_matrix = initialize_q_matrix(reward_matrix)
+def q_learning_algorithm_step_by_step(reward_matrix, gamma, episodes, goal_state):
+    print("Starting Q Learning")
+    print("Gamma: ", gamma, "Episodes: ", len(episodes), "Goal State: ", goal_state)
+    q_matrix = initialize_q_matrix(reward_matrix)
+    state_sequence = []
     for _ in episodes:
         random_state = get_random_state(reward_matrix)
-        while True:
+        state_sequence.append(random_state)
+        print("Initial Random State: ", random_state)
+        while True:  # This simulates a do while loop
             next_state = random.choice(get_possible_states(reward_matrix, random_state))
-            max_q_value = get_max_q_value(Q_matrix, next_state)
-            Q_matrix[random_state, next_state] = reward_matrix[random_state, next_state] + (gamma * max_q_value)
+            print("Next State: ", next_state)
+            max_q_value = get_max_q_value(q_matrix, next_state)
+            print("Max Q Value: ", max_q_value)
+            print("Calculating Q Value")
+            print("Q[state, action] = R[state, action] + (gamma * max_q_value)")
+            print('q_matrix[', random_state, ',', next_state, '] = reward_matrix[', random_state, ',', next_state, ']', '+ (', gamma, ' * ', max_q_value, ')')
+            print('q_matrix[', random_state, ',', next_state, '] = ', reward_matrix[random_state, next_state], ' + ', gamma * max_q_value)
+            q_matrix[random_state, next_state] = reward_matrix[random_state, next_state] + (gamma * max_q_value)
+            print('q_matrix[', random_state, ',', next_state, ']  = ', q_matrix[random_state, next_state])
+
             random_state = next_state
+            state_sequence.append(random_state)
+            print('Setting next state as: ', random_state)
+            print('Q matrix: ', '\n', q_matrix)
+
+            input("Presse Enter to continue \n")
             if random_state == goal_state:
+                print('Next state is the goal state so break')
+                print('End of episode \n')
+                print('Sequence of states was: ', state_sequence)
+                state_sequence.clear()
                 break
-        time.sleep(0)
-    return Q_matrix
+        input("Presse Enter to continue \n")
+    return q_matrix
+
+
+def q_learning_algorithm(reward_matrix, gamma, episodes, goal_state):
+    q_matrix = initialize_q_matrix(reward_matrix)
+    state_sequence = []
+    for _ in episodes:
+        random_state = get_random_state(reward_matrix)
+        state_sequence.append(random_state)
+        while True:  # This simulates a do while loop
+            next_state = random.choice(get_possible_states(reward_matrix, random_state))
+            max_q_value = get_max_q_value(q_matrix, next_state)
+            q_matrix[random_state, next_state] = reward_matrix[random_state, next_state] + (gamma * max_q_value)
+
+            random_state = next_state
+            state_sequence.append(random_state)
+
+            if random_state == goal_state:
+                state_sequence.clear()
+                break
+    return q_matrix
 
 
 def use_q_matrix(q_matrix, initial_state, goal):
@@ -72,7 +114,7 @@ def use_q_matrix(q_matrix, initial_state, goal):
     print(state_sequence)
 
 
-Q = q_learning_algorithm(R, 0.8, range(10), 5)
+Q = q_learning_algorithm_step_by_step(R, 0.8, range(100), 5)
 
 use_q_matrix(Q, 0, 5)
 
